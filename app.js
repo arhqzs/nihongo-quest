@@ -497,8 +497,8 @@ function renderLearn() {
   v.append(hero);
 
   for (const u of UNITS) {
-    const card = el("div", "unit");
-    const band = el("div", "unit-band band-" + (UNITS.indexOf(u) % 4));
+    const card = el("div", "unit band-" + (UNITS.indexOf(u) % 4));
+    const band = el("div", "unit-band");
     const em = el("div", "unit-emblem jp", UNIT_EMBLEMS[u.id] || u.jp[0]);
     band.append(em);
     const titles = el("div", "unit-titles");
