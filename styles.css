@@ -177,9 +177,9 @@ nav.tabs {
   position: absolute; right: 4px; bottom: -24px; font-size: 5.2rem; line-height: 1;
   color: var(--bandc, var(--accent)); opacity: .14; pointer-events: none; user-select: none; z-index: 0;
 }
-.unit-body { padding: 18px 20px 22px; display: flex; flex-direction: column; flex: 1; }
-.unit-art { flex: 1; min-height: 64px; margin: 0 0 16px; position: relative; }
-.unit-art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.unit-body { padding: 16px 18px 20px; display: flex; flex-direction: column; flex: 1; justify-content: center; }
+.unit-sep { position: relative; min-height: 88px; margin: 2px 0 24px; }
+.unit-sep svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .unit p.blurb { color: var(--fg2); margin: 6px 0 14px; font-size: .92rem; }
 .nodes { display: flex; flex-wrap: wrap; gap: 14px; }
 .node { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 86px; }
@@ -523,13 +523,13 @@ nav.tabs {
   .top-inner { max-width: min(96vw, 1800px); }
   .tabs-inner { max-width: 1000px; }
   main { max-width: min(96vw, 1800px); padding-block: 24px 120px; }
-  #view-learn { display: grid; grid-template-columns: repeat(auto-fit, minmax(540px, 1fr)); gap: 40px; }
+  #view-learn { display: grid; grid-template-columns: repeat(2, 1fr); gap: 36px; }
   #view-learn .hero-card { grid-column: 1 / -1; margin-bottom: 0; padding: 28px 32px; }
   #view-learn .unit { margin-bottom: 0; }
   #view-learn .unit-band { padding: 16px 22px; }
-  #view-learn .unit-body { padding: 22px 26px 26px; }
-  #view-learn .unit p.blurb { margin: 0 0 20px; }
+  #view-learn .unit-body { padding: 20px 24px 24px; }
   #view-learn .nodes { gap: 18px 22px; }
+  #view-learn .unit-sep { display: none; }
   #view-me, #view-settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap: 24px; align-items: start; }
   #view-me .me-head, #view-settings .back-row, #view-settings .ex-prompt { grid-column: 1 / -1; }
   #view-me .me-section, #view-settings .me-section { margin-bottom: 0; }
@@ -538,6 +538,10 @@ nav.tabs {
   .hero-art { width: 170px; }
   .chat-wrap { max-width: 1000px; margin: 0 auto; width: 100%; }
   .lesson-top, .lesson-scroll, .foot-inner { max-width: 900px; }
+}
+@media (min-width: 1400px) {
+  #view-learn { grid-template-columns: repeat(3, 1fr); }
+  #view-learn .unit-sep { display: block; grid-column: 1 / -1; min-height: 130px; margin: 0; }
 }
 
 /* ---------- theme picker ---------- */

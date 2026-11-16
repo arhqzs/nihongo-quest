@@ -512,11 +512,6 @@ function renderLearn() {
     band.append(ghost);
     card.append(band);
     const body = el("div", "unit-body");
-    body.append(el("p", "blurb", u.blurb));
-    const art = el("div", "unit-art");
-    art.setAttribute("aria-hidden", "true");
-    art.innerHTML = UNIT_ART[UNITS.indexOf(u) % 4];
-    body.append(art);
     const nodes = el("div", "nodes");
     for (const l of u.lessons) {
       const nw = el("div", "node");
@@ -537,6 +532,14 @@ function renderLearn() {
     body.append(nodes);
     card.append(body);
     v.append(card);
+    const idx = UNITS.indexOf(u);
+    if (idx % 3 === 2) {
+      const scene = Math.floor(idx / 3) % 4;
+      const sep = el("div", "unit-sep band-" + scene);
+      sep.setAttribute("aria-hidden", "true");
+      sep.innerHTML = UNIT_ART[scene];
+      v.append(sep);
+    }
   }
 }
 
