@@ -480,17 +480,19 @@ nav.tabs {
 
 /* ---------- desktop layout: use most of the screen ---------- */
 @media (min-width: 900px) {
-  .top-inner, .tabs-inner { max-width: 1200px; }
-  main { max-width: 1200px; padding-block: 24px 120px; }
-  #view-learn { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+  .top-inner { max-width: min(96vw, 1800px); }
+  .tabs-inner { max-width: 1000px; }
+  main { max-width: min(96vw, 1800px); padding-block: 24px 120px; }
+  #view-learn { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 22px; align-items: start; }
   #view-learn .hero-card { grid-column: 1 / -1; margin-bottom: 0; }
   #view-learn .unit { margin-bottom: 0; }
-  #view-me, #view-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  #view-me, #view-settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap: 16px; align-items: start; }
   #view-me .me-head, #view-settings .back-row, #view-settings .ex-prompt { grid-column: 1 / -1; }
   #view-me .me-section, #view-settings .me-section { margin-bottom: 0; }
   .me-section.wide { grid-column: 1 / -1; }
-  .chat-wrap { max-width: 880px; margin: 0 auto; width: 100%; }
-  .lesson-top, .lesson-scroll, .foot-inner { max-width: 860px; }
+  #view-practice .practice-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .chat-wrap { max-width: 1000px; margin: 0 auto; width: 100%; }
+  .lesson-top, .lesson-scroll, .foot-inner { max-width: 900px; }
 }
 
 /* ---------- theme picker ---------- */
