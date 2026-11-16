@@ -442,15 +442,21 @@ function renderLearn() {
 
   for (const u of UNITS) {
     const card = el("div", "unit");
-    const head = el("div", "unit-head");
-    const em = el("div", "unit-emblem jp em-" + (UNITS.indexOf(u) % 4), UNIT_EMBLEMS[u.id] || u.jp[0]);
-    head.append(em);
-    head.append(el("h2", null, u.title));
-    head.append(el("span", "jp-tag jp", u.jp));
+    const band = el("div", "unit-band band-" + (UNITS.indexOf(u) % 4));
+    const em = el("div", "unit-emblem jp", UNIT_EMBLEMS[u.id] || u.jp[0]);
+    band.append(em);
+    const titles = el("div", "unit-titles");
+    titles.append(el("h2", null, u.title));
+    titles.append(el("div", "jp-tag jp", u.jp));
+    band.append(titles);
     const done = u.lessons.filter(l => state.lessons[l.id]).length;
-    head.append(el("span", "unit-prog", done + "/" + u.lessons.length));
-    card.append(head);
-    card.append(el("p", "blurb", u.blurb));
+    band.append(el("span", "unit-prog", done + "/" + u.lessons.length));
+    const ghost = el("span", "unit-ghost jp", UNIT_EMBLEMS[u.id] || u.jp[0]);
+    ghost.setAttribute("aria-hidden", "true");
+    band.append(ghost);
+    card.append(band);
+    const body = el("div", "unit-body");
+    body.append(el("p", "blurb", u.blurb));
     const nodes = el("div", "nodes");
     for (const l of u.lessons) {
       const nw = el("div", "node");
@@ -468,7 +474,8 @@ function renderLearn() {
       nw.append(el("label", null, l.title));
       nodes.append(nw);
     }
-    card.append(nodes);
+    body.append(nodes);
+    card.append(body);
     v.append(card);
   }
 }
