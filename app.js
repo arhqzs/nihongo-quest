@@ -34,15 +34,16 @@ const ICONS = {
   speaker: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   turtle: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 12h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   mic: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
 };
 function svgNode(name) { const d = el("span"); d.innerHTML = ICONS[name]; return d.firstChild; }
 
 /* ---------- state & persistence ---------- */
-const DAILY_GOAL_MIN = 15;
+function goalMin() { return (state.settings && state.settings.goalMin) || 15; }
 let state = {
   v: 1, xp: 0, lessons: {}, badges: [], days: {}, streak: 0, lastDay: null,
   counters: { write: 0, speak: 0, tutor: 0, traceXpDay: "", traceXpCount: 0 },
-  traced: {}, skin: "indigo",
+  traced: {}, skin: "indigo", settings: { goalMin: 15, rate: 1 },
 };
 function applySkin() {
   const s = state.skin || "indigo";
@@ -71,6 +72,7 @@ function mergeProgress(remote) {
     for (const k of ["write", "speak", "tutor"]) state.counters[k] = Math.max(state.counters[k], (remote.counters || {})[k] || 0);
     Object.assign(state.traced, remote.traced || {});
     if (remote.skin && SKINS.some(s => s.id === remote.skin)) state.skin = remote.skin;
+    if (remote.settings) state.settings = Object.assign({ goalMin: 15, rate: 1 }, state.settings, remote.settings);
   } catch (e) { /* keep local */ }
 }
 function loadLocal() {
@@ -179,6 +181,7 @@ const AudioMod = {
     return /[。！？]$/.test(clean) ? clean : clean + "。";
   },
   speak(text, rate = 1) {
+    rate = rate * ((state.settings && state.settings.rate) || 1);
     if (this.mode === "tts") {
       this.tts.speak(this.jaText(text), { language: "ja", rate }).catch(e => {
         if (e && (e.code === "not_granted" || e.code === "unavailable")) { this.tts = null; this.decideMode(); }
@@ -342,6 +345,7 @@ function renderHeader() {
 
 /* ---------- tabs & views ---------- */
 let currentView = "learn";
+let prevView = "learn";
 const TABS = [
   { id: "learn", label: "Learn", icon: "book" },
   { id: "practice", label: "Practice", icon: "pencil" },
@@ -362,10 +366,13 @@ function renderTabs() {
 }
 function renderView() {
   for (const t of TABS) $("#view-" + t.id).hidden = t.id !== currentView;
+  const sv = $("#view-settings");
+  if (sv) sv.hidden = currentView !== "settings";
   if (currentView === "learn") renderLearn();
   if (currentView === "practice") renderPractice();
   if (currentView === "sensei") renderSensei();
   if (currentView === "me") renderMe();
+  if (currentView === "settings") renderSettings();
 }
 
 /* ---------- Learn view ---------- */
@@ -394,9 +401,9 @@ function renderLearn() {
   const hero = el("div", "hero-card");
   const started = Object.keys(state.lessons).length > 0;
   hero.append(el("h1", null, started ? "おかえりなさい — welcome back!" : "ようこそ — welcome!"));
-  const goalMin = Math.floor(todaySec() / 60);
+  const gm = Math.floor(todaySec() / 60);
   hero.append(el("p", null, started
-    ? `Daily goal: ${goalMin}/${DAILY_GOAL_MIN} min · ${todayXp()} XP today. Small steps, every day — that's the whole secret.`
+    ? `Daily goal: ${gm}/${goalMin()} min · ${todayXp()} XP today. Small steps, every day — that's the whole secret.`
     : "Zero Japanese needed. Tap the first lesson and you'll read your first word in about 3 minutes."));
   const next = nextLesson();
   if (next) {
@@ -1874,7 +1881,7 @@ function renderMe(v2) {
   const mkRow = (a, b) => { const r = el("div", "row"); r.append(el("span", null, a), el("span", null, b)); rows.append(r); };
   let week = 0;
   for (let i = 0; i < 7; i++) week += (state.days[todayKey(-i)] || {}).sec || 0;
-  mkRow("Today", fmtMin(todaySec()) + " · goal " + DAILY_GOAL_MIN + "m");
+  mkRow("Today", fmtMin(todaySec()) + " · goal " + goalMin() + "m");
   mkRow("This week", fmtMin(week));
   mkRow("All time", fmtMin(totalSec()));
   timeSec.append(rows);
@@ -1884,7 +1891,7 @@ function renderMe(v2) {
     const k = todayKey(-i);
     const sec = (state.days[k] || {}).sec || 0;
     const d = new Date(); d.setDate(d.getDate() - i);
-    const c = el("div", "day-chip" + (sec >= DAILY_GOAL_MIN * 60 ? " goal" : ""));
+    const c = el("div", "day-chip" + (sec >= goalMin() * 60 ? " goal" : ""));
     c.append(el("b", null, i === 0 ? "Today" : dayNames[d.getDay()]));
     c.append(document.createTextNode(Math.floor(sec / 60) + "m"));
     chips.append(c);
@@ -1907,8 +1914,16 @@ function renderMe(v2) {
   badgeSec.append(grid);
   v.append(badgeSec);
 
-  const themeSec = el("div", "me-section");
-  themeSec.append(el("h3", null, "🎨 Theme"));
+  const more = el("div", "me-section");
+  more.append(el("h3", null, "⚙ More"));
+  const ob = el("button", "btn btn-ghost btn-sm", "Open settings — themes, goals & voice speed");
+  ob.onclick = () => { prevView = "me"; currentView = "settings"; renderTabs(); renderView(); };
+  more.append(ob);
+  v.append(more);
+}
+
+/* ---------- Settings view ---------- */
+function renderSkinPicker() {
   const pickGrid = el("div", "skin-grid");
   for (const s of SKINS) {
     const c = el("button", "skin-card" + ((state.skin || "indigo") === s.id ? " active" : ""));
@@ -1921,25 +1936,123 @@ function renderMe(v2) {
     c.onclick = () => { state.skin = s.id; applySkin(); markDirty(); renderHeader(); renderView(); };
     pickGrid.append(c);
   }
-  themeSec.append(pickGrid);
-  v.append(themeSec);
+  return pickGrid;
+}
+function renderSettings() {
+  const v = $("#view-settings");
+  if (!v) return;
+  v.innerHTML = "";
+  const back = el("div", "back-row");
+  const bb = el("button", "btn btn-ghost btn-sm", "← Back");
+  bb.onclick = () => { currentView = prevView || "learn"; renderTabs(); renderView(); };
+  back.append(bb);
+  v.append(back);
+  v.append(el("h1", "ex-prompt", "Settings — 設定"));
 
-  const danger = el("div", "me-section");
-  danger.append(el("h3", null, "Settings"));
+  const theme = el("div", "me-section wide");
+  theme.append(el("h3", null, "🎨 Theme"));
+  theme.append(renderSkinPicker());
+  v.append(theme);
+
+  const prefs = el("div", "me-section");
+  prefs.append(el("h3", null, "⏱ Daily goal"));
+  prefs.append(el("p", "ex-sub", "Minutes of active study that count as a full day — your streak flame and day chips follow this."));
+  const segRow = el("div", "seg-row");
+  for (const m of [5, 10, 15, 20, 30]) {
+    const b = el("button", "seg" + (goalMin() === m ? " active" : ""), m + " min");
+    b.onclick = () => { state.settings.goalMin = m; markDirty(); renderSettings(); };
+    segRow.append(b);
+  }
+  prefs.append(segRow);
+  v.append(prefs);
+
+  const audio = el("div", "me-section");
+  audio.append(el("h3", null, "🔊 Voice speed"));
+  audio.append(el("p", "ex-sub", "How fast Japanese audio plays everywhere in the app."));
+  const aRow = el("div", "seg-row");
+  for (const [val, label] of [[1, "Normal"], [0.85, "Relaxed"], [0.7, "Slow"]]) {
+    const b = el("button", "seg" + (((state.settings.rate || 1) === val) ? " active" : ""), label);
+    b.onclick = () => { state.settings.rate = val; markDirty(); renderSettings(); AudioMod.speak("こんにちは"); };
+    aRow.append(b);
+  }
+  audio.append(aRow);
+  if (!AudioMod.ready) audio.append(el("p", "ex-sub", "Audio isn't available in this view — the choice is saved for when it is."));
+  v.append(audio);
+
+  const data = el("div", "me-section");
+  data.append(el("h3", null, "💾 Data"));
+  data.append(el("p", "ex-sub", "Progress saves automatically — to your Claude account on claude.ai, or to this browser on the public site."));
   const resetBtn = el("button", "btn btn-ghost btn-sm", "Reset all progress");
   let armed = false;
   resetBtn.onclick = () => {
     if (!armed) { armed = true; resetBtn.textContent = "Tap again to really erase everything"; resetBtn.style.color = "var(--bad)"; return; }
-    state = { v: 1, xp: 0, lessons: {}, badges: [], days: {}, streak: 0, lastDay: null, counters: { write: 0, speak: 0, tutor: 0, traceXpDay: "", traceXpCount: 0 }, traced: {}, skin: state.skin };
+    state = { v: 1, xp: 0, lessons: {}, badges: [], days: {}, streak: 0, lastDay: null, counters: { write: 0, speak: 0, tutor: 0, traceXpDay: "", traceXpCount: 0 }, traced: {}, skin: state.skin, settings: state.settings };
     markDirty(); flushSave();
     renderHeader(); renderView();
   };
-  danger.append(resetBtn);
-  v.append(danger);
+  data.append(resetBtn);
+  v.append(data);
+
+  const about = el("div", "me-section");
+  about.append(el("h3", null, "About"));
+  about.append(el("p", "ex-sub", "Nihongo Quest — 9 units · 42 lessons · hiragana, katakana, 54 kanji, grammar and real conversation. Built with Claude."));
+  v.append(about);
 }
 
 /* ---------- boot ---------- */
+function buildShell() {
+  if (!document.getElementById("app")) {
+    const shell = el("div");
+    shell.id = "app";
+    shell.innerHTML = `
+      <header class="top"><div class="top-inner">
+        <div class="logo">
+          <svg class="torii" viewBox="0 0 26 22" aria-hidden="true"><rect x="1" y="2" width="24" height="3" rx="1.5" fill="var(--red)"></rect><rect x="4" y="8" width="18" height="2.4" rx="1.2" fill="var(--red)"></rect><rect x="6" y="4" width="3" height="18" rx="1.2" fill="var(--red)"></rect><rect x="17" y="4" width="3" height="18" rx="1.2" fill="var(--red)"></rect></svg>
+          <span>Nihongo Quest</span>
+        </div>
+        <div class="statchips" id="statchips" aria-live="polite"></div>
+        <button class="icon-btn" id="settings-btn" aria-label="Settings">${ICONS.gear}</button>
+      </div></header>
+      <main>
+        <section id="view-learn" hidden></section>
+        <section id="view-practice" hidden></section>
+        <section id="view-sensei" hidden></section>
+        <section id="view-me" hidden></section>
+        <section id="view-settings" hidden></section>
+      </main>
+      <nav class="tabs" aria-label="Main"><div class="tabs-inner" id="tabbar"></div></nav>`;
+    document.body.prepend(shell);
+    for (const id of ["lesson", "modal-root", "toast-root"]) {
+      const d = el("div");
+      d.id = id;
+      if (id === "lesson") d.hidden = true;
+      document.body.append(d);
+    }
+  } else {
+    // older static markup: add the pieces the settings view needs
+    if (!document.getElementById("view-settings")) {
+      const s = el("section"); s.id = "view-settings"; s.hidden = true;
+      const m = document.querySelector("main");
+      if (m) m.append(s);
+    }
+    if (!document.getElementById("settings-btn")) {
+      const b = el("button", "icon-btn");
+      b.id = "settings-btn";
+      b.setAttribute("aria-label", "Settings");
+      b.innerHTML = ICONS.gear;
+      const t = document.querySelector(".top-inner");
+      if (t) t.append(b);
+    }
+  }
+  const sb = document.getElementById("settings-btn");
+  if (sb) sb.onclick = () => {
+    if (currentView !== "settings") prevView = currentView;
+    currentView = "settings";
+    renderTabs(); renderView();
+  };
+}
 function boot(hotData) {
+  buildShell();
   loadLocal();
   applySkin();
   if (hotData && hotData.view) currentView = hotData.view;
