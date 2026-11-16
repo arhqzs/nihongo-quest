@@ -35,7 +35,26 @@ const ICONS = {
   turtle: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 12h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   mic: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  navLearn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h14v18H6a2 2 0 0 0-2 2V5z"/><path d="M20 17H6a2 2 0 0 0-2 2"/><text x="12.6" y="12.6" text-anchor="middle" font-size="8.4" font-family="Noto Sans JP, sans-serif" fill="currentColor" stroke="none">あ</text></svg>',
+  navPractice: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 18.5l1-3.5L16.5 4.5a2 2 0 0 1 2.8 2.8L8.5 17.8 5 18.5z" stroke-linejoin="round"/><path d="M4.5 22c3-1.6 6.5 1.6 9.5 0" stroke-linecap="round"/></svg>',
+  navSensei: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a8 8 0 0 1-8 8H4l2.5-2.6A8 8 0 1 1 21 11.5z" stroke-linejoin="round"/><text x="12.4" y="14.8" text-anchor="middle" font-size="8.4" font-family="Noto Sans JP, sans-serif" fill="currentColor" stroke="none">先</text></svg>',
+  navMe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="8.5" r="3.6"/><path d="M4.5 20.5c1-3.6 3.6-5.4 6.5-5.4s5.5 1.8 6.5 5.4" stroke-linecap="round"/><path d="M18.4 3.2l.7 1.4 1.5.22-1.1 1.07.26 1.5-1.36-.7-1.36.7.26-1.5-1.1-1.07 1.5-.22z" fill="currentColor" stroke="none"/></svg>',
 };
+
+const HERO_ART = '<svg viewBox="0 0 150 112" aria-hidden="true">'
+  + '<circle cx="112" cy="26" r="16" fill="var(--gold)" opacity="0.8"></circle>'
+  + '<ellipse cx="34" cy="24" rx="17" ry="6" fill="var(--line2)" opacity="0.9"></ellipse>'
+  + '<ellipse cx="52" cy="32" rx="12" ry="5" fill="var(--line2)" opacity="0.7"></ellipse>'
+  + '<path d="M4 96 L52 44 L100 96 Z" fill="var(--accent-soft)"></path>'
+  + '<path d="M36 61 L52 44 L68 61 L60 58 L52 63 L44 58 Z" fill="var(--bg2)"></path>'
+  + '<rect x="58" y="34" width="66" height="7" rx="3" fill="var(--red)"></rect>'
+  + '<rect x="66" y="48" width="50" height="5" rx="2" fill="var(--red)"></rect>'
+  + '<rect x="71" y="38" width="7" height="58" rx="2" fill="var(--red)"></rect>'
+  + '<rect x="104" y="38" width="7" height="58" rx="2" fill="var(--red)"></rect>'
+  + '<rect x="0" y="94" width="150" height="4" rx="2" fill="var(--line2)"></rect>'
+  + '</svg>';
+
+const UNIT_EMBLEMS = { u1: "あ", u2: "ん", u3: "ア", u4: "語", u5: "文", u6: "漢", u7: "形", u8: "会", u9: "字" };
 function svgNode(name) { const d = el("span"); d.innerHTML = ICONS[name]; return d.firstChild; }
 
 /* ---------- state & persistence ---------- */
@@ -347,18 +366,20 @@ function renderHeader() {
 let currentView = "learn";
 let prevView = "learn";
 const TABS = [
-  { id: "learn", label: "Learn", icon: "book" },
-  { id: "practice", label: "Practice", icon: "pencil" },
-  { id: "sensei", label: "Sensei", icon: "chat" },
-  { id: "me", label: "Me", icon: "person" },
+  { id: "learn", label: "Learn", icon: "navLearn" },
+  { id: "practice", label: "Practice", icon: "navPractice" },
+  { id: "sensei", label: "Sensei", icon: "navSensei" },
+  { id: "me", label: "Me", icon: "navMe" },
 ];
 function renderTabs() {
   const bar = $("#tabbar");
   bar.innerHTML = "";
   for (const t of TABS) {
-    const b = el("button", "tab");
+    const b = el("button", "tab tab-" + t.id);
     b.setAttribute("aria-current", String(t.id === currentView));
-    b.innerHTML = ICONS[t.icon];
+    const iw = el("span", "ico-wrap");
+    iw.innerHTML = ICONS[t.icon];
+    b.append(iw);
     b.append(el("span", null, t.label));
     b.onclick = () => { currentView = t.id; renderTabs(); renderView(); };
     bar.append(b);
@@ -399,25 +420,31 @@ function renderLearn() {
   const v = $("#view-learn");
   v.innerHTML = "";
   const hero = el("div", "hero-card");
+  const txt = el("div", "hero-txt");
   const started = Object.keys(state.lessons).length > 0;
-  hero.append(el("h1", null, started ? "おかえりなさい — welcome back!" : "ようこそ — welcome!"));
+  txt.append(el("h1", null, started ? "おかえりなさい — welcome back!" : "ようこそ — welcome!"));
   const gm = Math.floor(todaySec() / 60);
-  hero.append(el("p", null, started
+  txt.append(el("p", null, started
     ? `Daily goal: ${gm}/${goalMin()} min · ${todayXp()} XP today. Small steps, every day — that's the whole secret.`
     : "Zero Japanese needed. Tap the first lesson and you'll read your first word in about 3 minutes."));
   const next = nextLesson();
   if (next) {
     const btn = el("button", "btn btn-primary", (started ? "Continue: " : "Start: ") + next.title);
     btn.onclick = () => startLesson(next);
-    hero.append(btn);
+    txt.append(btn);
   } else {
-    hero.append(el("p", null, "You finished every lesson! Keep your streak alive in Practice."));
+    txt.append(el("p", null, "You finished every lesson! Keep your streak alive in Practice."));
   }
+  const art = el("div", "hero-art");
+  art.innerHTML = HERO_ART;
+  hero.append(txt, art);
   v.append(hero);
 
   for (const u of UNITS) {
     const card = el("div", "unit");
     const head = el("div", "unit-head");
+    const em = el("div", "unit-emblem jp em-" + (UNITS.indexOf(u) % 4), UNIT_EMBLEMS[u.id] || u.jp[0]);
+    head.append(em);
     head.append(el("h2", null, u.title));
     head.append(el("span", "jp-tag jp", u.jp));
     const done = u.lessons.filter(l => state.lessons[l.id]).length;
