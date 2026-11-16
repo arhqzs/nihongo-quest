@@ -55,6 +55,62 @@ const HERO_ART = '<svg viewBox="0 0 150 112" aria-hidden="true">'
   + '</svg>';
 
 const UNIT_EMBLEMS = { u1: "あ", u2: "ん", u3: "ア", u4: "語", u5: "文", u6: "漢", u7: "形", u8: "会", u9: "字" };
+
+/* decorative filler scenes, one per band color; they stretch to absorb a card's
+   spare height so every unit card in a row levels out with no blank space */
+const UNIT_ART = [
+  // 0 — Mount Fuji at dawn
+  '<svg viewBox="0 0 420 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true">'
+  + '<circle cx="350" cy="38" r="22" fill="var(--bandc)" opacity="0.25"></circle>'
+  + '<path d="M180 130 L300 62 L420 130 Z" fill="var(--bandc)" opacity="0.16"></path>'
+  + '<path d="M0 130 L120 40 L240 130 Z" fill="var(--bandc-soft)"></path>'
+  + '<path d="M78 72 L120 40 L162 72 L146 66 L120 76 L94 66 Z" fill="var(--bg2)"></path>'
+  + '<ellipse cx="60" cy="30" rx="26" ry="8" fill="var(--line2)"></ellipse>'
+  + '<ellipse cx="96" cy="42" rx="18" ry="6" fill="var(--line2)" opacity="0.7"></ellipse>'
+  + '<rect x="0" y="124" width="420" height="6" fill="var(--line2)"></rect>'
+  + '</svg>',
+  // 1 — torii on the water
+  '<svg viewBox="0 0 420 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true">'
+  + '<circle cx="70" cy="40" r="14" fill="var(--bandc)" opacity="0.2"></circle>'
+  + '<rect x="150" y="26" width="120" height="10" rx="4" fill="var(--bandc)"></rect>'
+  + '<rect x="165" y="50" width="90" height="7" rx="3" fill="var(--bandc)"></rect>'
+  + '<rect x="175" y="36" width="10" height="76" rx="3" fill="var(--bandc)"></rect>'
+  + '<rect x="235" y="36" width="10" height="76" rx="3" fill="var(--bandc)"></rect>'
+  + '<ellipse cx="210" cy="118" rx="130" ry="8" fill="var(--bandc-soft)"></ellipse>'
+  + '<path d="M20 110 q14 -10 28 0 q14 10 28 0" stroke="var(--bandc)" fill="none" stroke-width="3" opacity="0.4"></path>'
+  + '<path d="M330 110 q14 -10 28 0 q14 10 28 0" stroke="var(--bandc)" fill="none" stroke-width="3" opacity="0.4"></path>'
+  + '</svg>',
+  // 2 — paper lanterns
+  '<svg viewBox="0 0 420 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true">'
+  + '<path d="M0 20 Q210 6 420 14" stroke="var(--line2)" stroke-width="3" fill="none"></path>'
+  + '<rect x="84" y="18" width="8" height="12" fill="var(--bandc)" opacity="0.5"></rect>'
+  + '<rect x="70" y="30" width="36" height="48" rx="15" fill="var(--bandc-soft)" stroke="var(--bandc)" stroke-width="2.5"></rect>'
+  + '<line x1="76" y1="44" x2="100" y2="44" stroke="var(--bandc)" stroke-width="2" opacity="0.5"></line>'
+  + '<line x1="74" y1="56" x2="102" y2="56" stroke="var(--bandc)" stroke-width="2" opacity="0.5"></line>'
+  + '<rect x="314" y="12" width="8" height="12" fill="var(--bandc)" opacity="0.5"></rect>'
+  + '<rect x="300" y="24" width="36" height="48" rx="15" fill="var(--bandc-soft)" stroke="var(--bandc)" stroke-width="2.5"></rect>'
+  + '<line x1="306" y1="38" x2="330" y2="38" stroke="var(--bandc)" stroke-width="2" opacity="0.5"></line>'
+  + '<line x1="304" y1="50" x2="332" y2="50" stroke="var(--bandc)" stroke-width="2" opacity="0.5"></line>'
+  + '<circle cx="180" cy="62" r="4" fill="var(--bandc)" opacity="0.35"></circle>'
+  + '<circle cx="216" cy="46" r="3" fill="var(--bandc)" opacity="0.3"></circle>'
+  + '<circle cx="250" cy="70" r="3.5" fill="var(--bandc)" opacity="0.3"></circle>'
+  + '<rect x="0" y="124" width="420" height="6" fill="var(--line2)"></rect>'
+  + '</svg>',
+  // 3 — sakura branch
+  '<svg viewBox="0 0 420 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true">'
+  + '<path d="M0 120 Q140 96 420 108" stroke="var(--line2)" stroke-width="5" fill="none"></path>'
+  + '<path d="M60 112 q30 -36 90 -46" stroke="var(--bandc)" stroke-width="4" fill="none" opacity="0.45"></path>'
+  + '<g fill="var(--bandc)" opacity="0.5">'
+  + '<circle cx="150" cy="64" r="7"></circle><circle cx="163" cy="58" r="7"></circle><circle cx="156" cy="72" r="7"></circle>'
+  + '<circle cx="110" cy="84" r="6"></circle><circle cx="121" cy="77" r="6"></circle>'
+  + '<circle cx="196" cy="52" r="5"></circle>'
+  + '</g>'
+  + '<g fill="var(--bg2)"><circle cx="156" cy="65" r="3.5"></circle><circle cx="115" cy="81" r="3"></circle></g>'
+  + '<circle cx="260" cy="42" r="4" fill="var(--bandc)" opacity="0.4"></circle>'
+  + '<circle cx="302" cy="72" r="3.5" fill="var(--bandc)" opacity="0.35"></circle>'
+  + '<circle cx="342" cy="36" r="3" fill="var(--bandc)" opacity="0.3"></circle>'
+  + '</svg>',
+];
 function svgNode(name) { const d = el("span"); d.innerHTML = ICONS[name]; return d.firstChild; }
 
 /* ---------- state & persistence ---------- */
@@ -457,6 +513,10 @@ function renderLearn() {
     card.append(band);
     const body = el("div", "unit-body");
     body.append(el("p", "blurb", u.blurb));
+    const art = el("div", "unit-art");
+    art.setAttribute("aria-hidden", "true");
+    art.innerHTML = UNIT_ART[UNITS.indexOf(u) % 4];
+    body.append(art);
     const nodes = el("div", "nodes");
     for (const l of u.lessons) {
       const nw = el("div", "node");
