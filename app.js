@@ -430,7 +430,7 @@ function renderLearn() {
       const b = el("button", "node-btn jp");
       const rec = state.lessons[l.id];
       const unlocked = lessonUnlocked(l);
-      b.textContent = unlocked ? nodeSymbol(l) : "🔒";
+      b.textContent = nodeSymbol(l);
       if (rec) b.classList.add("done");
       else if (unlocked) b.classList.add("avail");
       else { b.classList.add("locked"); b.disabled = true; }
@@ -909,7 +909,7 @@ function showItem() {
   const hintBtn = el("button", "btn btn-ghost btn-sm", "Hint");
   hintBtn.onclick = () => {
     S.usedHintNow = true;
-    showToast("💡 " + (ex.hint || "Trust your first instinct!"));
+    showToast(ex.hint || "Trust your first instinct!");
   };
   const helpBtn = el("button", "btn btn-ghost btn-sm", "Help");
   helpBtn.onclick = () => openHelp(ex);
@@ -984,7 +984,7 @@ function showFeedback(ok, ex, res, gained) {
     if (res && res.whyWrong) fb.append(el("p", null, res.whyWrong));
   }
   if (ex.explain) fb.append(el("p", null, ex.explain));
-  if (!ok && ex.improve) fb.append(el("p", "improve", "📈 How to improve: " + ex.improve));
+  if (!ok && ex.improve) fb.append(el("p", "improve", "How to improve: " + ex.improve));
   if (res && res.detail) fb.append(el("p", "improve", res.detail));
   if (!ok && sampleFn) {
     const aiBtn = el("button", "btn btn-ghost btn-sm", "Ask AI to explain more");
@@ -1335,7 +1335,7 @@ const EX_RENDERERS = {
           const got = normJa(collected);
           const want = normJa(p.w);
           const close = got && (got.includes(want) || want.includes(got) || levDist(got, want) <= Math.ceil(want.length * 0.5));
-          if (close) complete("I heard 「" + collected.trim() + "」 — sounded great! 🎉", "great");
+          if (close) complete("I heard 「" + collected.trim() + "」 — sounded great!", "great");
           else if (got) complete("I heard 「" + collected.trim() + "」. Close — listen once more and copy the rhythm.", "ok");
           else complete("Didn't catch that — but speaking out loud is what counts. Try the slow playback and repeat once more.", "ok");
         }
@@ -1758,7 +1758,7 @@ function renderSpeakStudio(v) {
       did.textContent = "✓";
       did.disabled = true;
       addXp(2); markStudiedToday();
-      showToast("+2 XP — " + p.r + " 🎤");
+      showToast("+2 XP — " + p.r);
     };
     li.append(did);
     ul.append(li);
@@ -1840,7 +1840,7 @@ async function sendChat(text) {
   } catch (e) {
     const msg =
       e && e.code === "not_granted" ? "You haven't allowed this app to use Claude — that's okay! The rest of the app works without it." :
-      e && e.code === "rate_limited" ? "Sensei needs a short tea break (rate limit) — try again in a minute. ☕" :
+      e && e.code === "rate_limited" ? "Sensei needs a short tea break (rate limit) — try again in a minute." :
       e && e.code === "cancelled" ? "(stopped)" :
       "Hmm, I couldn't reach the AI just now. Try again in a moment!";
     chatTurns.push({ role: "assistant", content: (e && e.text ? e.text + "\n\n" : "") + msg });
@@ -1876,7 +1876,7 @@ function renderMe(v2) {
   v.append(head);
 
   const timeSec = el("div", "me-section");
-  timeSec.append(el("h3", null, "⏱ Active learning time"));
+  timeSec.append(el("h3", null, "Active learning time"));
   const rows = el("div", "time-rows");
   const mkRow = (a, b) => { const r = el("div", "row"); r.append(el("span", null, a), el("span", null, b)); rows.append(r); };
   let week = 0;
@@ -1901,7 +1901,7 @@ function renderMe(v2) {
   v.append(timeSec);
 
   const badgeSec = el("div", "me-section");
-  badgeSec.append(el("h3", null, "🏅 Badges — " + state.badges.length + "/" + BADGES.length));
+  badgeSec.append(el("h3", null, "Badges · " + state.badges.length + "/" + BADGES.length));
   const grid = el("div", "badges-grid");
   for (const b of BADGES) {
     const got = hasBadge(b.id);
@@ -1915,7 +1915,7 @@ function renderMe(v2) {
   v.append(badgeSec);
 
   const more = el("div", "me-section");
-  more.append(el("h3", null, "⚙ More"));
+  more.append(el("h3", null, "More"));
   const ob = el("button", "btn btn-ghost btn-sm", "Open settings — themes, goals & voice speed");
   ob.onclick = () => { prevView = "me"; currentView = "settings"; renderTabs(); renderView(); };
   more.append(ob);
@@ -1950,12 +1950,12 @@ function renderSettings() {
   v.append(el("h1", "ex-prompt", "Settings — 設定"));
 
   const theme = el("div", "me-section wide");
-  theme.append(el("h3", null, "🎨 Theme"));
+  theme.append(el("h3", null, "Theme"));
   theme.append(renderSkinPicker());
   v.append(theme);
 
   const prefs = el("div", "me-section");
-  prefs.append(el("h3", null, "⏱ Daily goal"));
+  prefs.append(el("h3", null, "Daily goal"));
   prefs.append(el("p", "ex-sub", "Minutes of active study that count as a full day — your streak flame and day chips follow this."));
   const segRow = el("div", "seg-row");
   for (const m of [5, 10, 15, 20, 30]) {
@@ -1967,7 +1967,7 @@ function renderSettings() {
   v.append(prefs);
 
   const audio = el("div", "me-section");
-  audio.append(el("h3", null, "🔊 Voice speed"));
+  audio.append(el("h3", null, "Voice speed"));
   audio.append(el("p", "ex-sub", "How fast Japanese audio plays everywhere in the app."));
   const aRow = el("div", "seg-row");
   for (const [val, label] of [[1, "Normal"], [0.85, "Relaxed"], [0.7, "Slow"]]) {
@@ -1980,7 +1980,7 @@ function renderSettings() {
   v.append(audio);
 
   const data = el("div", "me-section");
-  data.append(el("h3", null, "💾 Data"));
+  data.append(el("h3", null, "Data"));
   data.append(el("p", "ex-sub", "Progress saves automatically — to your Claude account on claude.ai, or to this browser on the public site."));
   const resetBtn = el("button", "btn btn-ghost btn-sm", "Reset all progress");
   let armed = false;
